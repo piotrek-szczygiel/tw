@@ -1,23 +1,30 @@
 import java.util.Stack;
 
 class Shop {
-    private CountingSemaphore sem;
+    private CountingSemaphore countingSem;
+    private BinarySemaphore binarySem;
     private Stack<Cart> cartStack = new Stack<>();
 
     Shop(int num) {
-        sem = new CountingSemaphore(num);
+        countingSem = new CountingSemaphore(num);
+        binarySem = new BinarySemaphore();
         for (int i = 0; i < num; ++i) {
             cartStack.push(new Cart(i));
         }
     }
 
     Cart takeCart() {
-        sem.p();
-        return cartStack.pop();
+        countingSem.p();
+        binarySem.p();
+        Cart cart = cartStack.pop();
+        binarySem.v();
+        return cart;
     }
 
     void returnCart(Cart cart) {
+        binarySem.p();
         cartStack.push(cart);
-        sem.v();
+        binarySem.v();
+        countingSem.v();
     }
 }

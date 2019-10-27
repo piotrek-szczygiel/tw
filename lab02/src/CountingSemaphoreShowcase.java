@@ -4,10 +4,10 @@ import java.util.List;
 
 public class CountingSemaphoreShowcase {
     public static void main(String[] args) throws InterruptedException {
-        Shop shop = new Shop(10);
+        Shop shop = new Shop(2);
         List<Thread> threads = new ArrayList<>();
 
-        int numClients = 100;
+        int numClients = 10;
 
         for (int i = 0; i < numClients; ++i) {
             threads.add(new Thread(new Client(shop, i)));
