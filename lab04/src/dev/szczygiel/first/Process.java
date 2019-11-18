@@ -19,26 +19,29 @@ public class Process implements Runnable {
 
         for (int i = 0; i < buffer.length; ++i) {
             var condition = pipeline.lock(i);
+            try {
 
-            while (buffer[i] != id) {
+                while (buffer[i] != id) {
+                    try {
+                        condition.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                System.out.println("Process " + id + ": " + i);
+
                 try {
-                    condition.await();
+                    Thread.sleep(random.nextInt(1000));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                buffer[i] = id + 1;
+                condition.signal();
+            } finally {
+                pipeline.unlock(i);
             }
-
-            System.out.println("Process " + id + ": " + i);
-
-            try {
-                Thread.sleep(random.nextInt(1000));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            buffer[i] = id + 1;
-            condition.signal();
-            pipeline.unlock(i);
         }
 
         System.out.println("Process " + id + " finished");

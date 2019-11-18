@@ -2,21 +2,19 @@ package dev.szczygiel.second;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
-//        long duration = 2000;
-//        var producers = List.of(10, 100, 1000);
-//        var buffers = List.of(BufferType.NAIVE, BufferType.CLEVER);
-//        var sizes = List.of(1000, 10_000, 100_000);
-//
-//        for (var b : buffers)
-//            for (var p : producers)
-//                for (var s : sizes)
-//                    run(b, s, p, duration);
+        long duration = 1000;
+        var producers = List.of(10, 100, 1000);
+        var buffers = List.of(BufferType.NAIVE, BufferType.CLEVER);
+        var sizes = List.of(1000, 10_000, 100_000);
 
-        run(BufferType.NAIVE, 1_000, 100, 5_000);
-//        run(BufferType.CLEVER, 100_000, 1000, 10_000);
+        for (var b : buffers)
+            for (var p : producers)
+                for (var s : sizes)
+                    run(b, s, p, duration);
     }
 
     private static Buffer createBuffer(BufferType type, int size) {

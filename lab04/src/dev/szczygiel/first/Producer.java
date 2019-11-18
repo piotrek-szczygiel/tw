@@ -13,20 +13,23 @@ public class Producer implements Runnable {
 
         for (int i = 0; i < buffer.length; ++i) {
             var condition = pipeline.lock(i);
+            try {
 
-            while (buffer[i] != -1) {
-                try {
-                    condition.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                while (buffer[i] != -1) {
+                    try {
+                        condition.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
+
+                buffer[i] = 0;
+                System.out.println("Producer: " + i);
+
+                condition.signal();
+            } finally {
+                pipeline.unlock(i);
             }
-
-            buffer[i] = 0;
-            System.out.println("Producer: " + i);
-
-            condition.signal();
-            pipeline.unlock(i);
         }
 
         System.out.println("Producer finished");
