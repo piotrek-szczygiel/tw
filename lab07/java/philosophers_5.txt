@@ -1,0 +1,4 @@
+Asym: 458.04
+Conductor: 467.36
+Both: 447.8
+
