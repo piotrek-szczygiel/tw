@@ -8,13 +8,19 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class RestFetcher {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        fetchAll(200);
-        System.out.println();
+        long startMulti = System.currentTimeMillis();
+        fetchAll(50);
+        long elapsedMulti = System.currentTimeMillis() - startMulti;
+        System.out.println("Multithreaded: " + elapsedMulti + "ms");
+
+        long startSingle = System.currentTimeMillis();
         fetchAll(1);
+        long elapsedSingle = System.currentTimeMillis() - startSingle;
+        System.out.println("Singlethreaded: " + elapsedSingle + "ms");
+        System.out.println("Multithreaded is faster " + (float) elapsedSingle / elapsedMulti + " times");
     }
 
     private static void fetchAll(int threads) throws ExecutionException, InterruptedException {
@@ -24,13 +30,15 @@ public class RestFetcher {
         List<Future<String>> futures = new ArrayList<>();
 
         for (int i = 0; i < 200; ++i) {
-            int id = ThreadLocalRandom.current().nextInt(1, 100);
+            int id = i % 100 + 1;
             futures.add(executor.submit(() -> fetchPost(id)));
         }
 
         for (int i = 0; i < futures.size(); ++i) {
             var future = futures.get(i);
-            System.out.print('.');
+            if (i % 5 == 0) {
+                System.out.print('.');
+            }
             if (future.get() == null) {
                 System.out.println();
                 System.err.println(i + " failed");
